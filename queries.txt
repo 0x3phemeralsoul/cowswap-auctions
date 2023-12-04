@@ -1,0 +1,79 @@
+-- database: /home/miguel/dev/cowswap-auctions/cowswap-auctions.db
+
+-- Use the ▷ button in the top right corner to run the entire file.
+
+SELECT solutions.solver, solutions.id, contract_names.contract_name from solutions
+JOIN  call_data_interactions on call_data_interactions.solution_id = solutions.id
+JOIN contract_names on call_data_interactions.target = contract_names.address
+ORDER BY solutions.solver ASC;
+
+/* Getting all sources, iexcluding ERC20 tag */
+SELECT distinct(call_data_interactions.target) as sources, contract_names.tag, solutions.solver FROM call_data_interactions
+JOIN solutions ON call_data_interactions.solution_id = solutions.id
+JOIN contract_names on call_data_interactions.target = contract_names.address
+WHERE contract_names.tag != 'ERC20'
+ORDER BY solver, tag ASC;
+
+/* 
+Number of liquidity sources per solver */
+SELECT count(distinct(call_data_interactions.target)) as sources, solutions.solver FROM call_data_interactions
+JOIN solutions ON call_data_interactions.solution_id = solutions.id
+JOIN contract_names on call_data_interactions.target = contract_names.address
+WHERE contract_names.tag != 'ERC20'
+group by solver
+ORDER BY solver, tag ASC;
+
+
+/* check how many solvers */
+
+SELECT DISTINCT solver from solutions
+ORDER BY SOLVER ASC;
+
+
+/* how many times has each solver won an auction */
+SELECT count(solutions.auctionId) timesWon, solver from solutions
+WHERE ranking = 1
+GROUP BY solver
+ORDER BY timesWon DESC;
+
+
+/* Checking that TXhashes from Settlement contract are unique and I'm not blowing up numbers */
+SELECT count(distinct(TransactionHash)) as dist_txhash, count(TransactionHash) as txhash 
+from auction;
+
+
+/* Auctions in a month */
+SELECT count(auctionId) from auction;
+
+SELECT count(id) FROM transactions;
+
+
+DROP Table call_data_clearing_prices;
+drop table call_data_interactions;
+drop table call_data_tokens;
+drop table call_data_trades;
+
+
+drop table auction;
+drop table call_data;
+drop table clearing_prices;
+drop table orders;
+drop table prices;
+drop table solution_orders;
+drop table solutions;
+
+UPDATE contract_names SET tag='ERC20' WHERE contract_names.address = '0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a';
+
+
+SELECT * FROM contract_names wHERE tag != 'ERC20';
+
+select * from call_data_interactions 
+join solutions on solution_id = solutions.id
+where target='0xb634316E06cC0B358437CbadD4dC94F1D3a92B3b';
+
+
+/* How much ETH do solvers spend per month @ 2000USD 1 eth */
+SELECT solutions.solver, SUM(CAST(transactions.gasUsed as REAL) * CAST(transactions.effectiveGasPrice as REAL)) * POWER(10,-18) as totalEthUSDSpent from solutions
+JOIN auction on auction.auctionId = solutions.auctionId
+JOIN transactions on transactions.tx_hash = auction.transactionHash
+GROUP BY solutions.solver;

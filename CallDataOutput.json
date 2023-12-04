@@ -1,0 +1,87 @@
+{
+    "allPossibilities": [
+      {
+        "function": "settle(address[],uint256[],(uint256,uint256,address,uint256,uint256,uint32,bytes32,uint256,uint256,uint256,bytes)[],(address,uint256,bytes)[][3])",
+        "params": [
+          [
+            "0x162bb2Bb5FB03976a69dD25bB9afcE6140dB1433",
+            "0x2b81945875f892afF04AF0A298d35FB2cF848c7b",
+            "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+            "0xDEf1CA1fb7FBcDC777520aa7f396b4E015F497aB"
+          ],
+          [
+            "16734140676112384",
+            "93972312915968",
+            "98966320943104",
+            "10000000000"
+          ],
+          [
+            [
+              "2",
+              "3",
+              "0xf733AB0f071a0a64817F9Fb36a00c0FB308e4649",
+              "93849545758977365",
+              "927921776037168126115",
+              1699962397,
+              "0x8f282f74cba2fd7453c34e42c9c0d646137d33951130c3bdfcc222b4b4dbb325",
+              "6150454241022635",
+              "0",
+              "93849545758977365",
+              "0xbbde7b6c27ed9dbffa5d6573a56aaefbc6dd7cf6f7fb05f9106aee84614d044c1a36d5b23f2cc99fa4576b26afcab39c22ad0622669eae3bab4cd8d88d180c891b"
+            ],
+            [
+              "0",
+              "1",
+              "0x00BB1654Ff52b4d59e68A304a7f4e2625462d585",
+              "2172043278055378",
+              "355594691916790396",
+              1699962378,
+              "0x469be34901898569993fd5882433e69d76e346dc01afa197b646112d959f67f8",
+              "42218154919597",
+              "0",
+              "2172043278055378",
+              "0x1605c9bae0d8533a2ab97008049c4df82860c20af97cfaba2eec76b2b5a51fa540ed351e627d5287c4d68921cee361279a8a7e1f9d09af45c38b83e25d65f15a1c"
+            ]
+          ],
+          [
+            [],
+            [
+              [
+                "0x162bb2Bb5FB03976a69dD25bB9afcE6140dB1433",
+                "0",
+                "0xa9059cbb00000000000000000000000086f5d59a687170cf431500d7007106005cec2ee90000000000000000000000000000000000000000000000000007b7763c0677d2"
+              ],
+              [
+                "0x86f5d59a687170Cf431500d7007106005cEC2ee9",
+                "0",
+                "0x022c0d9f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005c4e0deccfa183b0000000000000000000000009008d19f58aabd9ed0d60971565aa8510560ab41000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              [
+                "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                "0",
+                "0xa9059cbb000000000000000000000000839e2d728bfead41fc642a0ec4132b33ebb09d1100000000000000000000000000000000000000000000000005c4e0deccfa1840"
+              ],
+              [
+                "0x839E2d728bFEAD41fC642A0EC4132B33eBB09D11",
+                "0",
+                "0x022c0d9f000000000000000000000000000000000000000000000000055e24cfe7cf9b7a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000009008d19f58aabd9ed0d60971565aa8510560ab41000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+              ]
+            ],
+            []
+          ]
+        ]
+      },
+      {
+        "function": "MoooZ1089603480()",
+        "params": []
+      }
+    ]
+  }
+
+
+
+
+Tokens: ['0x162bb2Bb5FB03976a69dD25bB9afcE6140dB1433', '0x2b81945875f892afF04AF0A298d35FB2cF848c7b', '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', '0xDEf1CA1fb7FBcDC777520aa7f396b4E015F497aB']
+clearingPrices: [16734140676112384, 93972312915968, 98966320943104, 10000000000]
+trades: [{'sellTokenIndex': 2, 'buyTokenIndex': 3, 'receiver': '0xf733AB0f071a0a64817F9Fb36a00c0FB308e4649', 'sellAmount': 93849545758977365, 'buyAmount': 927921776037168126115, 'validTo': 1699962397, 'appData': b'\x8f(/t\xcb\xa2\xfdtS\xc3NB\xc9\xc0\xd6F\x13}3\x95\x110\xc3\xbd\xfc\xc2"\xb4\xb4\xdb\xb3%', 'feeAmount': 6150454241022635, 'flags': 0, 'executedAmount': 93849545758977365, 'signature': b'\xbb\xde{l\'\xed\x9d\xbf\xfa]es\xa5j\xae\xfb\xc6\xdd|\xf6\xf7\xfb\x05\xf9\x10j\xee\x84aM\x04L\x1a6\xd5\xb2?,\xc9\x9f\xa4Wk&\xaf\xca\xb3\x9c"\xad\x06"f\x9e\xae;\xabL\xd8\xd8\x8d\x18\x0c\x89\x1b'}, {'sellTokenIndex': 0, 'buyTokenIndex': 1, 'receiver': '0x00BB1654Ff52b4d59e68A304a7f4e2625462d585', 'sellAmount': 2172043278055378, 'buyAmount': 355594691916790396, 'validTo': 1699962378, 'appData': b'F\x9b\xe3I\x01\x89\x85i\x99?\xd5\x88$3\xe6\x9dv\xe3F\xdc\x01\xaf\xa1\x97\xb6F\x11-\x95\x9fg\xf8', 'feeAmount': 42218154919597, 'flags': 0, 'executedAmount': 2172043278055378, 'signature': b"\x16\x05\xc9\xba\xe0\xd8S:*\xb9p\x08\x04\x9cM\xf8(`\xc2\n\xf9|\xfa\xba.\xecv\xb2\xb5\xa5\x1f\xa5@\xed5\x1eb}R\x87\xc4\xd6\x89!\xce\xe3a'\x9a\x8a~\x1f\x9d\t\xafE\xc3\x8b\x83\xe2]e\xf1Z\x1c"}]
+interactions: [[], [{'target': '0x162bb2Bb5FB03976a69dD25bB9afcE6140dB1433', 'value': 0, 'callData': b'\xa9\x05\x9c\xbb\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x86\xf5\xd5\x9ahqp\xcfC\x15\x00\xd7\x00q\x06\x00\\\xec.\xe9\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\xb7v<\x06w\xd2'}, {'target': '0x86f5d59a687170Cf431500d7007106005cEC2ee9', 'value': 0, 'callData': b'\x02,\r\x9f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05\xc4\xe0\xde\xcc\xfa\x18;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x90\x08\xd1\x9fX\xaa\xbd\x9e\xd0\xd6\tqVZ\xa8Q\x05`\xabA\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'}, {'target': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', 'value': 0, 'callData': b'\xa9\x05\x9c\xbb\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x83\x9e-r\x8b\xfe\xadA\xfcd*\x0e\xc4\x13+3\xeb\xb0\x9d\x11\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05\xc4\xe0\xde\xcc\xfa\x18@'}, {'target': '0x839E2d728bFEAD41fC642A0EC4132B33eBB09D11', 'value': 0, 'callData': b'\x02,\r\x9f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05^$\xcf\xe7\xcf\x9bz\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x90\x08\xd1\x9fX\xaa\xbd\x9e\xd0\xd6\tqVZ\xa8Q\x05`\xabA\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'}], []]

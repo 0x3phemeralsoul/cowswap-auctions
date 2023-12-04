@@ -1,0 +1,90 @@
+import requests
+import os
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Define your Etherscan API key
+etherscan_api_key = os.getenv('ETHERSCAN_API')  # Replace with your actual API key
+database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
+
+engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
+Base = automap_base()
+Base.prepare(autoload_with=engine)
+
+ContractNames = Base.classes.contract_names
+CallDataInteraction = Base.classes.call_data_interactions
+UninternalizedCallDataInteraction = Base.classes.uninternalized_call_data_interactions
+
+session = Session(engine)
+
+
+# Example: Query all transactions from the table
+contracts = session.query(CallDataInteraction.target).distinct().all()
+
+# Iterate through distinct targets and make API requests
+for target in contracts:
+    target_address = target[0]
+
+    # Construct the API URL. This API provides contract name. 
+    # A better endpoint is the metadata API which contains the public name tags that Etherscan has created but it costs 800+ USD/month. 
+    # An alternative is to fetch this through Dune API which has the public name tags I think.
+    api_url = f"https://api.etherscan.io/api?module=contract&action=getsourcecode&address={target_address}&apikey={etherscan_api_key}"
+
+    # Make the API request
+    response = requests.get(api_url)
+    data = response.json()
+
+    # Process the API response as needed
+    if data['status'] == '1':
+        # Extract relevant information from the response
+        name = data['result'][0]['ContractName']
+
+        # Process or print the source code as needed
+        print(f"CallData: Source code for target address {target_address}:\n{name}\n")
+        #if address already exists in contract_names, then skip
+        exists = session.query(ContractNames.address).filter_by(address=target_address).first() is not None
+        if(not exists):
+            newName = ContractNames(address=target_address,contract_name=name, tag='')
+            session.add(newName)
+            session.commit()
+        else:
+            print(f"CallData:Contract {target_address} already exists -----------------skipping")
+    else:
+        print(f"CallData:API request failed for target address {target_address}. Error: {data['message']}, {data['result']}")
+
+# Example: Query all transactions from the table
+contracts = session.query(UninternalizedCallDataInteraction.target).distinct().all()
+
+# Iterate through distinct targets and make API requests
+for target in contracts:
+    target_address = target[0]
+
+    # Construct the API URL
+    api_url = f"https://api.etherscan.io/api?module=contract&action=getsourcecode&address={target_address}&apikey={etherscan_api_key}"
+
+    # Make the API request
+    response = requests.get(api_url)
+    data = response.json()
+
+    # Process the API response as needed
+    if data['status'] == '1':
+        # Extract relevant information from the response
+        name = data['result'][0]['ContractName']
+
+        # Process or print the source code as needed
+        print(f"UninternalizedCallData: Source code for target address {target_address}:\n{name}\n")
+        #if address already exists in contract_names, then skip
+        exists = session.query(ContractNames.address).filter_by(address=target_address).first() is not None
+        if(not exists):
+            newName = ContractNames(address=target_address,contract_name=name, tag='')
+            session.add(newName)
+            session.commit()
+        else:
+            print(f"UninternalizedCallData:Contract {target_address} already exists -----------------skipping")
+    else:
+        print(f"UninternalizedCallData:API request failed for target address {target_address}. Error: {data['message']}, {data['result']}")
