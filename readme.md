@@ -8,6 +8,7 @@ create a cowswap-auctions.db file which will be empty
  python3 createCallDataTables.py
  python3 createUninternalizaedCallDataTables.py
  python3 createContractNameTable.py
+ python3 createOrdersbyUIDTable.py
  ```
 ## Table population
 ### get hashes from each on-chain batch auction settlement
@@ -32,7 +33,13 @@ python3 getContractNames.py
 ```
 This script populates the TAG conlumn with ERC20 for token interactions, for other interactions I've manually populated the collumn in order to identify the liquidity source used by the solver.
 
+### let's get all the transactions that users submitted for each batch auction so we can calculate COWs opportunities and check them against the COWs that were submitted on solutions
 
+before running the below command you might want to create an index on Orders.orderHash column as that table has over 10M rows.
+
+```
+python3 getOrdersByUid.py
+```
 
 # env template
 - rename .env.example to .env
