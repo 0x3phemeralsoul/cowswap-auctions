@@ -77,3 +77,9 @@ SELECT solutions.solver, SUM(CAST(transactions.gasUsed as REAL) * CAST(transacti
 JOIN auction on auction.auctionId = solutions.auctionId
 JOIN transactions on transactions.tx_hash = auction.transactionHash
 GROUP BY solutions.solver;
+
+
+SELECT count(DISTINCT orderHash) from orders;
+SELECT count(DISTINCT uid) from orders_by_uid;
+
+SELECT count(DISTINCT orderHash) FROM orders where orderHash not in (SELECT DISTINCT uid FROM orders_by_uid);
