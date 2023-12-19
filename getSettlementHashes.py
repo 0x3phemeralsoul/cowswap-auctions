@@ -1,13 +1,21 @@
 from web3 import Web3
 from dotenv import load_dotenv
-import os, time
+import os, time, sys
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, text
+from loguru import logger
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Setting logging
+logger.remove(0)
+logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
 
 # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
 database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
-engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
+engine = create_engine(database_url, echo=os.getenv('LOGGER_LEVEL') == 'TRACE')
 Base = automap_base()
 Base.prepare(autoload_with=engine)
 
@@ -15,8 +23,7 @@ Transaction = Base.classes.transactions
 session = Session(engine)
 
 
-# Load environment variables from .env file
-load_dotenv()
+
 
 # Get the RPC endpoint from the environment variable
 rpc_endpoint = os.getenv("RPC_ENDPOINT")
@@ -39,23 +46,24 @@ while True:
 
     START_BLOCK=session.execute(highestBlockDB_query).scalar_one()
     END_BLOCK=web3.eth.get_block('latest')['number']
-    print(f"Start BLOCK:{START_BLOCK}, End BLOCK:{END_BLOCK}")
+    logger.info(f"Start BLOCK:{START_BLOCK}, End BLOCK:{END_BLOCK}")
 
     for block in range(int(START_BLOCK+1), int(END_BLOCK)): 
         block = web3.eth.get_block(block, full_transactions=True) 
         for transaction in block.transactions:
             if(transaction["to"] == contract_address):
-                print(transaction["hash"].hex(), ",", block["number"])
+                logger.info(f"Tx Hash:{transaction['hash'].hex()} - Block:{block['number']}")
                 exists = session.query(Transaction.tx_hash).filter_by(tx_hash=transaction["hash"].hex()).first() is not None
                 if(not exists):
                 # Insert row
                     tx_receipt= web3.eth.get_transaction_receipt(transaction['hash'].hex())
                     new_transaction = Transaction(tx_hash=transaction["hash"].hex(), chain_id=1, block_number=block["number"], gasUsed=tx_receipt['gasUsed'], effectiveGasPrice=tx_receipt['effectiveGasPrice'])
-                    print('DB Commit output:', session.add(new_transaction)) 
+                    logger.debug(f'DB Commit output: {session.add(new_transaction)}') 
                     session.commit()
 
     session.close()
     # if i've inserted all blocks available, lets wait a bit until a new block is minted and continue adding
     if END_BLOCK-START_BLOCK == 0:
+        logger.info("Wait for 15 secs")
         time.sleep(15)
 
