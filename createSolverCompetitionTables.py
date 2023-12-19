@@ -8,7 +8,7 @@ import os
 load_dotenv()
 
 # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
-database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
+database_url = os.getenv("DATABASE_URL", "sqlite:///"+os.getenv('DB_NAME'))
 
 Base = declarative_base()
 

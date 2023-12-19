@@ -10,7 +10,7 @@ import os
 load_dotenv()
 
 # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
-database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
+database_url = os.getenv("DATABASE_URL", "sqlite:///"+os.getenv('DB_NAME'))
 
 Base = declarative_base()
 
@@ -18,7 +18,7 @@ class OrderByUid(Base):
     __tablename__ = 'orders_by_uid'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    # rows from the https://api.cow.fi/mainnet/api/v1/orders/ API endpoint
+    # rows from the https://api.cow.fi/"+os.getenv('CHAIN')+"/api/v1/orders/ API endpoint
     creation_date = Column(DateTime)
     owner = Column(String)
     uid = Column(String)

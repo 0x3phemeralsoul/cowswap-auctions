@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 
 
 def fetch_api_data(tx_hash):
-    api_url = f"https://api.cow.fi/mainnet/api/v1/solver_competition/by_tx_hash/{tx_hash}"
+    api_url = f"https://api.cow.fi/"+os.getenv('CHAIN')+"/api/v1/solver_competition/by_tx_hash/{tx_hash}"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -20,7 +20,7 @@ def fetch_api_data(tx_hash):
 
 def main():
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
-    database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
+    database_url = os.getenv("DATABASE_URL", "sqlite:///"+os.getenv('DB_NAME'))
     engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
     Base = automap_base()
     Base.prepare(autoload_with=engine)

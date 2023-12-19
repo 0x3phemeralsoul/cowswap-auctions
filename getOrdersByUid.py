@@ -9,7 +9,7 @@ import dateutil.parser
 
    
 def fetch_order_api_data(order_hash):
-    api_url = f"https://api.cow.fi/mainnet/api/v1/orders/{order_hash}"
+    api_url = f"https://api.cow.fi/"+os.getenv('CHAIN')+"/api/v1/orders/{order_hash}"
     response = requests.get(api_url)
 
     if response.status_code == 200:
@@ -22,7 +22,7 @@ def fetch_order_api_data(order_hash):
 
 def main():
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
-    database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
+    database_url = os.getenv("DATABASE_URL", "sqlite:///"+os.getenv('DB_NAME'))
     engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
     Base = automap_base()
     Base.prepare(autoload_with=engine)

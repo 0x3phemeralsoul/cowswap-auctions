@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Define your Etherscan API key
-etherscan_api_key = os.getenv('ETHERSCAN_API')  # Replace with your actual API key
-database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
+EXPLORER_API_key = os.getenv('EXPLORER_API')  # Replace with your actual API key
+database_url = os.getenv("DATABASE_URL", "sqlite:///"+os.getenv('DB_NAME'))
 
 engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
 Base = automap_base()
@@ -33,7 +33,7 @@ for target in contracts:
     # Construct the API URL. This API provides contract name. 
     # A better endpoint is the metadata API which contains the public name tags that Etherscan has created but it costs 800+ USD/month. 
     # An alternative is to fetch this through Dune API which has the public name tags I think.
-    api_url = f"https://api.etherscan.io/api?module=contract&action=getsourcecode&address={target_address}&apikey={etherscan_api_key}"
+    api_url = f"https://"+os.getenv('EXPLORER_URL')+"/api?module=contract&action=getsourcecode&address={target_address}&apikey={EXPLORER_API_key}"
 
     # Make the API request
     response = requests.get(api_url)
@@ -65,7 +65,7 @@ for target in contracts:
     target_address = target[0]
 
     # Construct the API URL
-    api_url = f"https://api.etherscan.io/api?module=contract&action=getsourcecode&address={target_address}&apikey={etherscan_api_key}"
+    api_url = f"https://"+os.getenv('EXPLORER_URL')+"/api?module=contract&action=getsourcecode&address={target_address}&apikey={EXPLORER_API_key}"
 
     # Make the API request
     response = requests.get(api_url)

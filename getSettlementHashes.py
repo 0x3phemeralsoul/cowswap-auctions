@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
 # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
-database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
+database_url = os.getenv("DATABASE_URL", "sqlite:///"+os.getenv('DB_NAME'))
 engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
 Base = automap_base()
 Base.prepare(autoload_with=engine)
