@@ -1,9 +1,11 @@
 import requests
-import os
+import os, sys
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, text
 import dateutil.parser
+from loguru import logger
+from dotenv import load_dotenv
 
 
 
@@ -21,9 +23,16 @@ def fetch_order_api_data(order_hash):
         return None
 
 def main():
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Setting logging
+    logger.remove(0)
+    logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
+
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
     database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
-    engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
+    engine = create_engine(database_url, echo=os.getenv('LOGGER_LEVEL') == 'TRACE')
     Base = automap_base()
     Base.prepare(autoload_with=engine)
 
@@ -34,10 +43,11 @@ def main():
 
 
     # Example: Query all transactions from the table
+    logger.info("Running query to remove entries already processed. Takes several seconds")
     orders_query = text("SELECT DISTINCT orderHash FROM orders where orderHash not in (SELECT DISTINCT uid FROM orders_by_uid)")
  
     orders = session.execute(orders_query).all()
-    print(f"Entries to process {len(orders)}")
+    logger.info(f"Entries to process {len(orders)}")
     session.commit()
     # Fetch API data for each transaction
     for order in orders:
@@ -46,7 +56,7 @@ def main():
         
         if solver_competition_api_data:
             # Process the API data as needed
-            print(f"API Data for order_hash {order_hash}")
+            logger.info(f"API Data for order_hash {order_hash}")
             order = OrderByUid(
             creation_date = dateutil.parser.isoparse(solver_competition_api_data["creationDate"]),
             owner = solver_competition_api_data["owner"], 

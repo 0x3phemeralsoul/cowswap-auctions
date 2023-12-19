@@ -1,9 +1,10 @@
 import requests
-import os
+import os, sys
+from dotenv import load_dotenv
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
-
+from loguru import logger
 
 
 def fetch_api_data(tx_hash):
@@ -19,9 +20,15 @@ def fetch_api_data(tx_hash):
         return None
 
 def main():
+    # Load environment variables from .env file
+    load_dotenv()
+    # Setting logging
+    logger.remove(0)
+    logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
+
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
     database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
-    engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
+    engine = create_engine(database_url, echo=os.getenv('LOGGER_LEVEL') == 'TRACE')
     Base = automap_base()
     Base.prepare(autoload_with=engine)
 
@@ -43,6 +50,7 @@ def main():
     # Fetch API data for each transaction
     for transaction in transactions:
         tx_hash = transaction.tx_hash
+        #TODO: refactor to use a query to remove IDs already in table.
         exists = session.query(Auction.transactionHash).filter_by(transactionHash=tx_hash).first() is not None
         if(not exists):
 
@@ -50,7 +58,7 @@ def main():
             
             if api_data:
                 # Process the API data as needed
-                print(f"API Data for tx_hash {tx_hash}")
+                logger.info(f"API Data for tx_hash {tx_hash}")
                 auction = Auction(
                     auctionId=api_data['auctionId'],
                     transactionHash=api_data['transactionHash'],
@@ -59,7 +67,7 @@ def main():
                     liquidityCollectedBlock=api_data['liquidityCollectedBlock'],
                     competitionSimulationBlock=api_data['competitionSimulationBlock']
                 )
-                print(f"TxHash: {api_data['transactionHash']}")
+                logger.info(f"TxHash: {api_data['transactionHash']}")
                 session.add(auction)
                 session.commit()
                 for orders in range(len(api_data['auction']['orders'])):
@@ -68,7 +76,7 @@ def main():
                 session.commit()
                 tokens = [*api_data['auction']['prices']]
                 for prices in range(len(tokens)):
-                    print(f"TokenAddress {prices}: {tokens[prices]}")
+                    logger.info(f"TokenAddress {prices}: {tokens[prices]}")
                     price = Price(tokenAddress=tokens[prices], price=api_data['auction']['prices'][tokens[prices]], auction=auction)
                     session.add(price)
                 session.commit()
@@ -121,7 +129,7 @@ def main():
             
             session.commit() 
         else:
-            print(f"TXhash {tx_hash} already in DB, skipping.")
+            logger.info(f"TXhash {tx_hash} already in DB, skipping.")
         # Close the session
         session.close()
    

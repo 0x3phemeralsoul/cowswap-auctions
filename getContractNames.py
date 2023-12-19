@@ -1,18 +1,21 @@
 import requests
-import os
+import os, sys
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+from loguru import logger
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Define your Etherscan API key
-EXPLORER_API_key = os.getenv('EXPLORER_API')  # Replace with your actual API key
-database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
+# Setting logging
+logger.remove(0)
+logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
 
-engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
+# Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
+database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
+engine = create_engine(database_url, echo=os.getenv('LOGGER_LEVEL') == 'TRACE')
 Base = automap_base()
 Base.prepare(autoload_with=engine)
 
@@ -33,7 +36,7 @@ for target in contracts:
     # Construct the API URL. This API provides contract name. 
     # A better endpoint is the metadata API which contains the public name tags that Etherscan has created but it costs 800+ USD/month. 
     # An alternative is to fetch this through Dune API which has the public name tags I think.
-    api_url = f"https://"+os.getenv('EXPLORER_URL')+"/api?module=contract&action=getsourcecode&address={target_address}&apikey={EXPLORER_API_key}"
+    api_url = f"https://{os.getenv('EXPLORER_URL')}/api?module=contract&action=getsourcecode&address={target_address}&apikey={os.getenv('EXPLORER_API')}"
 
     # Make the API request
     response = requests.get(api_url)
@@ -45,7 +48,7 @@ for target in contracts:
         name = data['result'][0]['ContractName']
 
         # Process or print the source code as needed
-        print(f"CallData: Source code for target address {target_address}:\n{name}\n")
+        logger.info(f"CallData: Source code for target address {target_address}:\n{name}\n")
         #if address already exists in contract_names, then skip
         exists = session.query(ContractNames.address).filter_by(address=target_address).first() is not None
         if(not exists):
@@ -53,9 +56,9 @@ for target in contracts:
             session.add(newName)
             session.commit()
         else:
-            print(f"CallData:Contract {target_address} already exists -----------------skipping")
+            logger.info(f"CallData:Contract {target_address} already exists -----------------skipping")
     else:
-        print(f"CallData:API request failed for target address {target_address}. Error: {data['message']}, {data['result']}")
+        logger.info(f"CallData:API request failed for target address {target_address}. Error: {data['message']}, {data['result']}")
 
 # Example: Query all transactions from the table
 contracts = session.query(UninternalizedCallDataInteraction.target).distinct().all()
@@ -77,7 +80,7 @@ for target in contracts:
         name = data['result'][0]['ContractName']
 
         # Process or print the source code as needed
-        print(f"UninternalizedCallData: Source code for target address {target_address}:\n{name}\n")
+        logger.info(f"UninternalizedCallData: Source code for target address {target_address}:\n{name}\n")
         #if address already exists in contract_names, then skip
         exists = session.query(ContractNames.address).filter_by(address=target_address).first() is not None
         if(not exists):
@@ -85,6 +88,6 @@ for target in contracts:
             session.add(newName)
             session.commit()
         else:
-            print(f"UninternalizedCallData:Contract {target_address} already exists -----------------skipping")
+            logger.info(f"UninternalizedCallData:Contract {target_address} already exists -----------------skipping")
     else:
-        print(f"UninternalizedCallData:API request failed for target address {target_address}. Error: {data['message']}, {data['result']}")
+        logger.info(f"UninternalizedCallData:API request failed for target address {target_address}. Error: {data['message']}, {data['result']}")

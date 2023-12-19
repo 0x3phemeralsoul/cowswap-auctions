@@ -1,13 +1,21 @@
 from web3 import Web3
 from dotenv import load_dotenv
-import os, json
+import os, json, sys
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, update
+from loguru import logger
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Setting logging
+logger.remove(0)
+logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
 
 # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
 database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
-engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
+engine = create_engine(database_url, echo=os.getenv('LOGGER_LEVEL') == 'TRACE')
 Base = automap_base()
 Base.prepare(autoload_with=engine)
 
@@ -44,7 +52,7 @@ with engine.connect() as connection:
             contractData = web3.eth.contract(address=toFetch, abi=abi)
             try:
 
-                print(f"Contract address {toFetch} and symbol: {contractData.functions.symbol().call()}")
+                logger.info(f"Contract address {toFetch} and symbol: {contractData.functions.symbol().call()}")
                 if(contractData.functions.symbol().call() != ''):
                     update_tag = (
                     update(ContractName)
@@ -54,7 +62,7 @@ with engine.connect() as connection:
                     connection.execute(update_tag)
                     connection.commit()
             except Exception as error:
-                print(f"Contract address {toFetch} and name:{contract.contract_name} is not ERC20")
+                logger.info(f"Contract address {toFetch} and name:{contract.contract_name} is not ERC20")
         else:
-            print(f"Already tagged")
+            logger.info(f"Already tagged")
 

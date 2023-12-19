@@ -1,17 +1,21 @@
 from web3 import Web3
 from dotenv import load_dotenv
-import os, json
+import os, json, sys
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
-
+from loguru import logger
 
 # Load environment variables from .env file
 load_dotenv()
 
+# Setting logging
+logger.remove(0)
+logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
+
 # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
 database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
-engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
+engine = create_engine(database_url, echo=os.getenv('LOGGER_LEVEL') == 'TRACE')
 Base = automap_base()
 Base.prepare(autoload_with=engine)
 
@@ -50,17 +54,17 @@ settlementContract = web3.eth.contract(address=os.getenv("contract_address"), ab
 
 # Fetch API data for each transaction
 for calldata in CallDatas:
-    print(f"Call data: {calldata.callData}")
-    print(f" call data type:{type(calldata.callData)}")
+    logger.debug(f"Call data: {calldata.callData}")
+    logger.info(f" call data type:{type(calldata.callData)}")
     toDecode = calldata.callData
     solutionId = calldata.solutionId
-    print(f"Solution ID: {solutionId}")
+    logger.info(f"Solution ID: {solutionId}")
     # Decode input data using Contract object's decode_function_input() method
     func_obj, func_params = settlementContract.decode_function_input(toDecode)
-    # pprint.pprint(f"Func_objc: {func_obj}")
     #if solutionID already exists in call_data_tables, then skip
+    #TODO: add query and refactor to remove IDs in table
     exists = session.query(UninternalizedCallDataClearingPrice.solution_id).filter_by(solution_id=solutionId).first() is not None
-    print(f"SolutionID {solutionId} already exists -----------------skipping")
+    logger.info(f"SolutionID {solutionId} already exists -----------------skipping")
     if(not exists):
         # store tokens
         for address in func_params['tokens']:
@@ -76,8 +80,8 @@ for calldata in CallDatas:
 
         # store trades
         for trade_data in range(len(func_params['trades'])):
-            print(f"starting trades {trade_data}-----------------------------------------------------")
-            print(f"buyAmount type: {type(str(func_params['trades'][trade_data]['buyTokenIndex']))}")
+            logger.info(f"starting trades {trade_data}-----------------------------------------------------")
+            logger.info(f"buyAmount type: {type(str(func_params['trades'][trade_data]['buyTokenIndex']))}")
             trades= UninternalizedCallDataTrade(
             sell_token_index= func_params['trades'][trade_data]['sellTokenIndex'],
             buy_token_index= str(func_params['trades'][trade_data]['buyTokenIndex']),
@@ -94,7 +98,7 @@ for calldata in CallDatas:
             session.add(trades)
 
         for interaction_data in range(len(func_params['interactions'])):
-            print(f"interaction lentgh {interaction_data}: {len(func_params['interactions'][interaction_data])}")
+            logger.info(f"interaction lentgh {interaction_data}: {len(func_params['interactions'][interaction_data])}")
             if(len(func_params['interactions'][interaction_data]) == 0):
                 interaction = UninternalizedCallDataInteraction(
                     target='NULL',
