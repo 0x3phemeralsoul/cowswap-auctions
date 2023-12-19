@@ -38,7 +38,7 @@ END_BLOCK=os.getenv("END_BLOCK")
 for block in range(int(START_BLOCK), int(END_BLOCK)): 
     block = web3.eth.get_block(block, full_transactions=True) 
     for transaction in block.transactions:
-        if(transaction["to"] == '0x9008D19f58AAbD9eD0D60971565AA8510560ab41'):
+        if(transaction["to"] == contract_address):
             print(transaction["hash"].hex(), ",", block["number"])
             exists = session.query(Transaction.tx_hash).filter_by(tx_hash=transaction["hash"].hex()).first() is not None
             if(not exists):
