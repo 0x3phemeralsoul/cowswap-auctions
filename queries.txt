@@ -83,3 +83,6 @@ SELECT count(DISTINCT orderHash) from orders;
 SELECT count(DISTINCT uid) from orders_by_uid;
 
 SELECT count(DISTINCT orderHash) FROM orders where orderHash not in (SELECT DISTINCT uid FROM orders_by_uid);
+
+/* Get the highest block in the Transaction table */
+SELECT block_number from transactions ORDER by block_number DESC Limit 1;

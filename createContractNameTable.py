@@ -8,7 +8,7 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-database_url = os.getenv("DATABASE_URL", "sqlite:///"+os.getenv('DB_NAME'))
+database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
 engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
 Base = declarative_base()
 Base = automap_base()

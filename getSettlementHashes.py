@@ -1,12 +1,12 @@
 from web3 import Web3
 from dotenv import load_dotenv
-import os
+import os, time
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
-database_url = os.getenv("DATABASE_URL", "sqlite:///"+os.getenv('DB_NAME'))
+database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
 engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
 Base = automap_base()
 Base.prepare(autoload_with=engine)
@@ -31,21 +31,31 @@ web3 = Web3(Web3.HTTPProvider(rpc_endpoint))
 
 contract_address = os.getenv("contract_address")
 
-# Specify blocks to fetch
-START_BLOCK=os.getenv("START_BLOCK")
-END_BLOCK=os.getenv("END_BLOCK")
 
-for block in range(int(START_BLOCK), int(END_BLOCK)): 
-    block = web3.eth.get_block(block, full_transactions=True) 
-    for transaction in block.transactions:
-        if(transaction["to"] == contract_address):
-            print(transaction["hash"].hex(), ",", block["number"])
-            exists = session.query(Transaction.tx_hash).filter_by(tx_hash=transaction["hash"].hex()).first() is not None
-            if(not exists):
-            # Insert row
-                tx_receipt= web3.eth.get_transaction_receipt(transaction['hash'].hex())
-                new_transaction = Transaction(tx_hash=transaction["hash"].hex(), chain_id=1, block_number=block["number"], gasUsed=tx_receipt['gasUsed'], effectiveGasPrice=tx_receipt['effectiveGasPrice'])
-                print('DB Commit output:', session.add(new_transaction)) 
-                session.commit()
+while True:
+    # Specify blocks to fetch
 
-session.close()
+    highestBlockDB_query = text("SELECT block_number from transactions ORDER by block_number DESC Limit 1")
+
+    START_BLOCK=session.execute(highestBlockDB_query).scalar_one()
+    END_BLOCK=web3.eth.get_block('latest')['number']
+    print(f"Start BLOCK:{START_BLOCK}, End BLOCK:{END_BLOCK}")
+
+    for block in range(int(START_BLOCK+1), int(END_BLOCK)): 
+        block = web3.eth.get_block(block, full_transactions=True) 
+        for transaction in block.transactions:
+            if(transaction["to"] == contract_address):
+                print(transaction["hash"].hex(), ",", block["number"])
+                exists = session.query(Transaction.tx_hash).filter_by(tx_hash=transaction["hash"].hex()).first() is not None
+                if(not exists):
+                # Insert row
+                    tx_receipt= web3.eth.get_transaction_receipt(transaction['hash'].hex())
+                    new_transaction = Transaction(tx_hash=transaction["hash"].hex(), chain_id=1, block_number=block["number"], gasUsed=tx_receipt['gasUsed'], effectiveGasPrice=tx_receipt['effectiveGasPrice'])
+                    print('DB Commit output:', session.add(new_transaction)) 
+                    session.commit()
+
+    session.close()
+    # if i've inserted all blocks available, lets wait a bit until a new block is minted and continue adding
+    if END_BLOCK-START_BLOCK == 0:
+        time.sleep(15)
+

@@ -10,7 +10,7 @@ load_dotenv()
 
 # Define your Etherscan API key
 EXPLORER_API_key = os.getenv('EXPLORER_API')  # Replace with your actual API key
-database_url = os.getenv("DATABASE_URL", "sqlite:///"+os.getenv('DB_NAME'))
+database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
 
 engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
 Base = automap_base()
