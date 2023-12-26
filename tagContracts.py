@@ -1,6 +1,6 @@
 from web3 import Web3
 from dotenv import load_dotenv
-import os, json, sys
+import os, json
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, update
@@ -10,8 +10,8 @@ from loguru import logger
 load_dotenv()
 
 # Setting logging
-logger.remove(0)
-logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
+
+
 
 # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
 database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")

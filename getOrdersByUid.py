@@ -27,9 +27,9 @@ def main():
     load_dotenv()
 
     # Setting logging
-    logger.remove(0)
-    logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
-    logger.add("logs/getOrdersByUid_{time}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
+    
+    
+    logger.add("logs/getOrdersByUid_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
 
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
     database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
@@ -38,7 +38,7 @@ def main():
     Base.prepare(autoload_with=engine)
 
     OrderByUid = Base.classes.orders_by_uid
-    Order = Base.classes.orders
+    # Order = Base.classes.orders
 
     session = Session(engine)
 

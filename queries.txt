@@ -86,3 +86,6 @@ SELECT count(DISTINCT orderHash) FROM orders where orderHash not in (SELECT DIST
 
 /* Get the highest block in the Transaction table */
 SELECT block_number from transactions ORDER by block_number DESC Limit 1;
+
+
+SELECT * from transactions where tx_hash='0x53cd0d13381e150ae502ef6a73608893c06025f723facaaa65a0040717f23e73';
