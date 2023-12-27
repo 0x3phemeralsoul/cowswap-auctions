@@ -19,7 +19,7 @@ def fetch_api_data(tx_hash):
                 api_data = response.json()
                 return api_data
             else:
-                logger.info(f"PRODCUTION: Error fetching API data for tx_hash {tx_hash} Status Code: {response.status_code}")
+                logger.info(f"PRODUCTION: Error fetching API data for tx_hash {tx_hash} Status Code: {response.status_code}")
 
                 # checking the Barn env
                 api_url = "https://barn.api.cow.fi/"+os.getenv('CHAIN')+"/api/v1/solver_competition/by_tx_hash/"+tx_hash
