@@ -1,5 +1,5 @@
 import requests
-import os, sys
+import os, time
 from dotenv import load_dotenv
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -9,27 +9,34 @@ from loguru import logger
 
 def fetch_api_data(tx_hash):
     # Checking the production env
-    api_url = "https://api.cow.fi/"+os.getenv('CHAIN')+"/api/v1/solver_competition/by_tx_hash/"+tx_hash
-    response = requests.get(api_url)
+    while True:
+        try:
+            api_url = "https://api.cow.fi/"+os.getenv('CHAIN')+"/api/v1/solver_competition/by_tx_hash/"+tx_hash
+            response = requests.get(api_url)
 
-    if response.status_code == 200:
-        # Parse the JSON response
-        api_data = response.json()
-        return api_data
-    else:
-        logger.info(f"PRODCUTION: Error fetching API data for tx_hash {tx_hash} Status Code: {response.status_code}")
+            if response.status_code == 200:
+                # Parse the JSON response
+                api_data = response.json()
+                return api_data
+            else:
+                logger.info(f"PRODCUTION: Error fetching API data for tx_hash {tx_hash} Status Code: {response.status_code}")
 
-        # checking the Barn env
-        api_url = "https://barn.api.cow.fi/"+os.getenv('CHAIN')+"/api/v1/solver_competition/by_tx_hash/"+tx_hash
-        response = requests.get(api_url)
+                # checking the Barn env
+                api_url = "https://barn.api.cow.fi/"+os.getenv('CHAIN')+"/api/v1/solver_competition/by_tx_hash/"+tx_hash
+                response = requests.get(api_url)
 
-        if response.status_code == 200:
-            # Parse the JSON response
-            api_data = response.json()
-            return api_data
-        else:
-            logger.info(f"BARN: Error fetching API data for tx_hash {tx_hash} Status Code: {response.status_code}")
-            return None
+                if response.status_code == 200:
+                    # Parse the JSON response
+                    api_data = response.json()
+                    return api_data
+                else:
+                    logger.info(f"BARN: Error fetching API data for tx_hash {tx_hash} Status Code: {response.status_code}")
+                    return None
+        except Exception as error:
+            logger.debug(f"ERROR: {error}")
+            time.sleep(5)
+            continue
+    
 
 def main():
     # Load environment variables from .env file
@@ -89,7 +96,7 @@ def main():
             session.commit()
             tokens = [*api_data['auction']['prices']]
             for prices in range(len(tokens)):
-                logger.info(f"TokenAddress {prices}: {tokens[prices]}")
+                logger.debug(f"TokenAddress {prices}: {tokens[prices]}")
                 price = Price(tokenAddress=tokens[prices], price=api_data['auction']['prices'][tokens[prices]], auction=auction)
                 session.add(price)
             session.commit()
