@@ -36,7 +36,6 @@ def main():
     load_dotenv()
     # Setting logging
     
-    
     logger.add("logs/getSolverCompetitions_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
 
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
@@ -66,7 +65,7 @@ def main():
     # Fetch API data for each transaction
     for transaction in transactions:
         tx_hash = transaction.tx_hash
-        print(f"TX HASH: {type(tx_hash)}")
+
 
         api_data = fetch_api_data(tx_hash)
         
@@ -78,7 +77,7 @@ def main():
                 transactionHash=api_data['transactionHash'],
                 # gasPrice=api_data['gasPrice'],
                 auctionStartBlock=api_data['auctionStartBlock'],
-                liquidityCollectedBlock=api_data['liquidityCollectedBlock'],
+                # liquidityCollectedBlock=api_data['liquidityCollectedBlock'],
                 competitionSimulationBlock=api_data['competitionSimulationBlock']
             )
             logger.info(f"TxHash: {api_data['transactionHash']}")
@@ -105,11 +104,11 @@ def main():
                     solverAddress=api_data['solutions'][solutions]['solverAddress'],
                     scoreProtocolWithSolverRisk=scoreProtocolWithSolverRisk,
                     ranking=api_data['solutions'][solutions]['ranking'],
-                    objective_total=api_data['solutions'][solutions]['objective']['total'],
-                    objective_surplus=api_data['solutions'][solutions]['objective']['surplus'],
-                    objective_fees=api_data['solutions'][solutions]['objective']['fees'],
-                    objective_cost=api_data['solutions'][solutions]['objective']['cost'],
-                    objective_gas=api_data['solutions'][solutions]['objective']['gas'],
+                    # objective_total=api_data['solutions'][solutions]['objective']['total'],
+                    # objective_surplus=api_data['solutions'][solutions]['objective']['surplus'],
+                    # objective_fees=api_data['solutions'][solutions]['objective']['fees'],
+                    # objective_cost=api_data['solutions'][solutions]['objective']['cost'],
+                    # objective_gas=api_data['solutions'][solutions]['objective']['gas'],
                     auction=auction
                 )
                 session.add(solution)
@@ -117,7 +116,7 @@ def main():
                 tokens = [*api_data['solutions'][solutions]['clearingPrices']]
                 for clearing_prices in range(len(tokens)):
                     clearing_price= ClearingPrice(tokenAddress=tokens[clearing_prices], price=api_data['solutions'][solutions]['clearingPrices'][tokens[clearing_prices]], solutions=solution)
-                session.add(clearing_price)
+                    session.add(clearing_price)
                 session.commit()
                 for solution_orders in range(len(api_data['solutions'][solutions]['orders'])):
                     solution_order = SolutionOrder(orderId=api_data['solutions'][solutions]['orders'][solution_orders]['id'], executedAmount=api_data['solutions'][solutions]['orders'][solution_orders]['executedAmount'], solutions=solution)
