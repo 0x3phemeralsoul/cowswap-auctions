@@ -288,3 +288,79 @@
 2023-12-26 21:42:51,509 WARN exited: getSolverCompetitions (exit status 1; not expected)
 2023-12-26 21:42:51,512 INFO spawned: 'getSolverCompetitions' with pid 2113697
 2023-12-26 21:42:52,521 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-26 21:51:02,964 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-26 21:51:03,012 INFO spawned: 'getSolverCompetitions' with pid 2114546
+2023-12-26 21:51:04,038 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-26 21:58:29,821 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-26 21:58:30,183 INFO spawned: 'getSolverCompetitions' with pid 2114940
+2023-12-26 21:58:31,205 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-26 21:59:05,473 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-26 21:59:06,055 INFO spawned: 'getSolverCompetitions' with pid 2114972
+2023-12-26 21:59:07,074 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-26 22:40:21,815 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-26 22:40:21,817 INFO spawned: 'getSolverCompetitions' with pid 2117291
+2023-12-26 22:40:22,858 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-26 22:46:31,977 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-26 22:46:31,990 INFO spawned: 'getSolverCompetitions' with pid 2117621
+2023-12-26 22:46:33,038 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-26 22:52:43,741 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-26 22:52:43,744 INFO spawned: 'getSolverCompetitions' with pid 2117950
+2023-12-26 22:52:44,813 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-26 22:53:11,708 INFO exited: getCallData (exit status 0; expected)
+2023-12-26 22:55:02,987 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-26 22:55:03,112 INFO spawned: 'getSolverCompetitions' with pid 2118041
+2023-12-26 22:55:04,126 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-26 22:56:17,078 INFO exited: getUninternalizedCallData (exit status 0; expected)
+2023-12-26 23:18:16,923 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-26 23:18:17,310 INFO spawned: 'getSolverCompetitions' with pid 2120060
+2023-12-26 23:18:18,316 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 00:43:46,384 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 00:43:46,555 INFO spawned: 'getSolverCompetitions' with pid 2127520
+2023-12-27 00:43:47,563 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 00:55:39,269 WARN exited: getContractNames (exit status 1; not expected)
+2023-12-27 00:55:39,274 INFO spawned: 'getContractNames' with pid 2128547
+2023-12-27 00:55:40,296 INFO success: getContractNames entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 01:19:23,873 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 01:19:24,880 INFO spawned: 'getSolverCompetitions' with pid 2130608
+2023-12-27 01:19:26,402 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 01:48:32,890 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 01:48:33,742 INFO spawned: 'getSolverCompetitions' with pid 2133134
+2023-12-27 01:48:34,897 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 01:54:23,230 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 01:54:23,347 INFO spawned: 'getSolverCompetitions' with pid 2133621
+2023-12-27 01:54:24,664 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 02:10:02,723 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 02:10:03,323 INFO spawned: 'getSolverCompetitions' with pid 2134974
+2023-12-27 02:10:04,325 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 02:16:18,577 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 02:16:19,584 INFO spawned: 'getSolverCompetitions' with pid 2135570
+2023-12-27 02:16:21,089 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 02:19:01,453 WARN exited: getContractNames (exit status 1; not expected)
+2023-12-27 02:19:01,499 INFO spawned: 'getContractNames' with pid 2135822
+2023-12-27 02:19:03,037 INFO success: getContractNames entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 03:55:48,691 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 03:55:48,870 INFO spawned: 'getSolverCompetitions' with pid 2144278
+2023-12-27 03:55:49,874 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 05:34:30,993 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 05:34:32,000 INFO spawned: 'getSolverCompetitions' with pid 2152929
+2023-12-27 05:34:33,041 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 05:51:55,094 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 05:51:56,097 INFO spawned: 'getSolverCompetitions' with pid 2154429
+2023-12-27 05:51:57,099 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 06:13:36,840 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 06:13:37,458 INFO spawned: 'getSolverCompetitions' with pid 2156278
+2023-12-27 06:13:38,546 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 06:16:00,771 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 06:16:00,995 INFO spawned: 'getSolverCompetitions' with pid 2156490
+2023-12-27 06:16:02,198 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 06:22:37,209 INFO exited: getContractNames (exit status 0; expected)
+2023-12-27 06:22:43,064 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 06:22:44,067 INFO spawned: 'getSolverCompetitions' with pid 2157136
+2023-12-27 06:22:45,068 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 06:51:27,329 WARN exited: getSolverCompetitions (exit status 1; not expected)
+2023-12-27 06:51:28,333 INFO spawned: 'getSolverCompetitions' with pid 2159775
+2023-12-27 06:51:29,335 INFO success: getSolverCompetitions entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-12-27 07:41:12,787 WARN received SIGINT indicating exit request
+2023-12-27 07:41:12,788 INFO waiting for getSettlementHashes, getSolverCompetitions to die
+2023-12-27 07:41:13,210 WARN stopped: getSolverCompetitions (terminated by SIGTERM)
+2023-12-27 07:41:13,218 WARN stopped: getSettlementHashes (terminated by SIGTERM)
