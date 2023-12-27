@@ -45,7 +45,6 @@ def main():
     Base = automap_base()
     Base.prepare(autoload_with=engine)
 
-    Transaction = Base.classes.transactions
     Auction = Base.classes.auction
     Order = Base.classes.orders
     Price = Base.classes.prices
@@ -77,7 +76,7 @@ def main():
             auction = Auction(
                 auctionId=api_data['auctionId'],
                 transactionHash=api_data['transactionHash'],
-                gasPrice=api_data['gasPrice'],
+                # gasPrice=api_data['gasPrice'],
                 auctionStartBlock=api_data['auctionStartBlock'],
                 liquidityCollectedBlock=api_data['liquidityCollectedBlock'],
                 competitionSimulationBlock=api_data['competitionSimulationBlock']
