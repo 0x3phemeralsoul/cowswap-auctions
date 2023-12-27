@@ -40,34 +40,30 @@ def main():
     contract_address = os.getenv("contract_address")
 
 
-    while True:
-        # Specify blocks to fetch
+    # Specify blocks to fetch
 
-        highestBlockDB_query = text("SELECT block_number from transactions ORDER by block_number DESC Limit 1")
+    highestBlockDB_query = text("SELECT block_number from transactions ORDER by block_number DESC Limit 1")
 
-        START_BLOCK=session.execute(highestBlockDB_query).scalar_one()
-        END_BLOCK=web3.eth.get_block('latest')['number']
-        logger.info(f"Start BLOCK:{START_BLOCK}, End BLOCK:{END_BLOCK}")
-        try:
-            for block in range(int(START_BLOCK+1), int(END_BLOCK)): 
-                block = web3.eth.get_block(block, full_transactions=True) 
-                for transaction in block.transactions:
-                    if(transaction["to"] == contract_address):
-                        logger.info(f"Tx Hash:{transaction['hash'].hex()} - Block:{block['number']}")
-                        exists = session.query(Transaction.tx_hash).filter_by(tx_hash=transaction["hash"].hex()).first() is not None
-                        if(not exists):
-                        # Insert row
-                            tx_receipt= web3.eth.get_transaction_receipt(transaction['hash'].hex())
-                            new_transaction = Transaction(tx_hash=transaction["hash"].hex(), chain_id=1, block_number=block["number"], gasUsed=tx_receipt['gasUsed'], effectiveGasPrice=tx_receipt['effectiveGasPrice'])
-                            logger.debug(f'DB Commit output: {session.add(new_transaction)}') 
-                            session.commit()
-        except Exception as error:
-                logger.debug(f"ERROR: {error}")
-        session.close()
-        # if i've inserted all blocks available, lets wait a bit until a new block is minted and continue adding
-        if END_BLOCK-START_BLOCK == 0:
-            logger.info("Wait for 15 secs")
-            time.sleep(15)
+    START_BLOCK=session.execute(highestBlockDB_query).scalar_one()
+    END_BLOCK=min(int(START_BLOCK+int(os.getenv("CHUNK_SIZE"))),web3.eth.get_block('latest')['number'])
+    logger.info(f"Start BLOCK:{START_BLOCK}, End BLOCK:{END_BLOCK}")
+    try:
+        for block in range(int(START_BLOCK+1), int(END_BLOCK)): 
+            block = web3.eth.get_block(block, full_transactions=True) 
+            for transaction in block.transactions:
+                if(transaction["to"] == contract_address):
+                    logger.info(f"Tx Hash:{transaction['hash'].hex()} - Block:{block['number']}")
+                    exists = session.query(Transaction.tx_hash).filter_by(tx_hash=transaction["hash"].hex()).first() is not None
+                    if(not exists):
+                    # Insert row
+                        tx_receipt= web3.eth.get_transaction_receipt(transaction['hash'].hex())
+                        new_transaction = Transaction(tx_hash=transaction["hash"].hex(), chain_id=1, block_number=block["number"], gasUsed=tx_receipt['gasUsed'], effectiveGasPrice=tx_receipt['effectiveGasPrice'])
+                        logger.debug(f'DB Commit output: {session.add(new_transaction)}') 
+                        session.commit()
+    except Exception as error:
+            logger.debug(f"ERROR: {error}")
+    session.close()
+
 
 if __name__ == "__main__":
     main()
