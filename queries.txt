@@ -90,3 +90,6 @@ SELECT block_number from transactions ORDER by block_number DESC Limit 1;
 
 /* GET all transactions not yet processed by getSolverCompetition script */
 SELECT * FROM transactions where tx_hash not in(SELECT auction.transactionHash from auction);
+
+
+Pragma

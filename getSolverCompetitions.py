@@ -43,11 +43,11 @@ def main():
     load_dotenv()
     # Setting logging
     
-    logger.add("logs/getSolverCompetitions_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
+    logger.add("logs/getSolverCompetitions_{time:YYYY-MM-DD}.log", level="INFO", rotation="100 MB")
 
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
     database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
-    engine = create_engine(database_url, echo=os.getenv('LOGGER_LEVEL') == 'TRACE')
+    engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
     Base = automap_base()
     Base.prepare(autoload_with=engine)
 
