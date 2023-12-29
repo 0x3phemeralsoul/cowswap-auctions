@@ -89,17 +89,17 @@ def main():
             )
             logger.info(f"TxHash: {api_data['transactionHash']}")
             session.add(auction)
-            session.commit()
+            # session.commit()
             for orders in range(len(api_data['auction']['orders'])):
                 order = Order(orderHash=api_data['auction']['orders'][orders], auction=auction)
                 session.add(order)
-            session.commit()
+            # session.commit()
             tokens = [*api_data['auction']['prices']]
             for prices in range(len(tokens)):
                 logger.debug(f"TokenAddress {prices}: {tokens[prices]}")
                 price = Price(tokenAddress=tokens[prices], price=api_data['auction']['prices'][tokens[prices]], auction=auction)
                 session.add(price)
-            session.commit()
+            # session.commit()
 
             for solutions in range(len(api_data['solutions'])):
                 if 'scoreProtocolWithSolverRisk' in api_data['solutions']:
@@ -119,16 +119,16 @@ def main():
                     auction=auction
                 )
                 session.add(solution)
-                session.commit()
+                #session.commit()
                 tokens = [*api_data['solutions'][solutions]['clearingPrices']]
                 for clearing_prices in range(len(tokens)):
                     clearing_price= ClearingPrice(tokenAddress=tokens[clearing_prices], price=api_data['solutions'][solutions]['clearingPrices'][tokens[clearing_prices]], solutions=solution)
                     session.add(clearing_price)
-                session.commit()
+                # session.commit()
                 for solution_orders in range(len(api_data['solutions'][solutions]['orders'])):
                     solution_order = SolutionOrder(orderId=api_data['solutions'][solutions]['orders'][solution_orders]['id'], executedAmount=api_data['solutions'][solutions]['orders'][solution_orders]['executedAmount'], solutions=solution)
                     session.add(solution_order)
-                session.commit()
+                # session.commit()
 
             callData = api_data['solutions'][solutions]['callData']
             if ('uninternalizedCallData' in api_data['solutions'][solutions]):
