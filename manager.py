@@ -1,7 +1,7 @@
 import getSettlementHashes, getSolverCompetitions, getCallData, getUninternalizedCallData, getContractNames, getOrdersByUid
 from dotenv import load_dotenv
 from loguru import logger
-import os
+import os, sys
 
 
 
@@ -10,7 +10,7 @@ def main():
     load_dotenv()
 
     # Setting logging
-
+    logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
     logger.add("logs/manager_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
     while True:
         logger.info("Start getSettlementHashes")

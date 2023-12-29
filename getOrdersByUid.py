@@ -28,7 +28,7 @@ def main():
 
     # Setting logging
     
-    
+    logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
     logger.add("logs/getOrdersByUid_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
 
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
@@ -93,9 +93,9 @@ def main():
             interactions = solver_competition_api_data["interactions"],
             )
             session.add(order)
-            session.commit()
             
-
+            
+    session.commit()
     # Close the session
     session.close()
    

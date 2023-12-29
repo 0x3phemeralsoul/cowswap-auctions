@@ -12,7 +12,7 @@ def main():
 
     # Setting logging
     
-    
+    logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
     logger.add("logs/getUninternalizedCallData_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
 
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
@@ -74,7 +74,7 @@ def main():
                 if(not exists):
                     token = UninternalizedCallDataToken(address=address)
                     session.add(token)
-            session.commit()
+            # session.commit()
             # store clearing prices
             for price in func_params['clearingPrices']:
                 clearing_price = UninternalizedCallDataClearingPrice(price=str(price), solution_id=solutionId)

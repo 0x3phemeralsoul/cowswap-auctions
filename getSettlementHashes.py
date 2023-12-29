@@ -12,7 +12,7 @@ def main():
     load_dotenv()
 
     # Setting logging
-    
+    logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
     logger.add("logs/getSettlementHashes_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
     database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
@@ -59,9 +59,10 @@ def main():
                         tx_receipt= web3.eth.get_transaction_receipt(transaction['hash'].hex())
                         new_transaction = Transaction(tx_hash=transaction["hash"].hex(), chain_id=1, block_number=block["number"], gasUsed=tx_receipt['gasUsed'], effectiveGasPrice=tx_receipt['effectiveGasPrice'])
                         logger.debug(f'DB Commit output: {session.add(new_transaction)}') 
-                        session.commit()
+                        
     except Exception as error:
             logger.debug(f"ERROR: {error}")
+    session.commit()
     session.close()
 
 
