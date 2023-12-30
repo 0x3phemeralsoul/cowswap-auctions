@@ -92,3 +92,4 @@ SELECT block_number from transactions ORDER by block_number DESC Limit 1;
 SELECT * FROM transactions where tx_hash not in(SELECT auction.transactionHash from auction);
 
 
+DELETE from transactions WHERE tx_hash in (SELECT tx_hash FROM transactions where tx_hash not in(SELECT auction.transactionHash from auction));

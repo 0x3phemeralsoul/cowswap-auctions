@@ -11,7 +11,7 @@ def main():
     load_dotenv()
 
     # Setting logging
-    
+    logger.remove(0)
     logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
     logger.add("logs/getContractNames_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
 
@@ -39,7 +39,7 @@ def main():
         # A better endpoint is the metadata API which contains the public name tags that Etherscan has created but it costs 800+ USD/month. 
         # An alternative is to fetch this through Dune API which has the public name tags I think.
         api_url = f"https://{os.getenv('EXPLORER_URL')}/api?module=contract&action=getsourcecode&address={target_address}&apikey={os.getenv('EXPLORER_API')}"
-
+        print(api_url)
         # Make the API request
         response = requests.get(api_url)
         data = response.json()
