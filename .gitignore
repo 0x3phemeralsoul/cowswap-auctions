@@ -3,3 +3,5 @@
 env
 backup
 *.db-journal
+logs
+__pycache__
