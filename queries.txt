@@ -83,3 +83,146 @@ SELECT count(DISTINCT orderHash) from orders;
 SELECT count(DISTINCT uid) from orders_by_uid;
 
 SELECT count(DISTINCT orderHash) FROM orders where orderHash not in (SELECT DISTINCT uid FROM orders_by_uid);
+
+/* Get the highest block in the Transaction table */
+SELECT block_number from transactions ORDER by block_number DESC Limit 1;
+
+
+/* GET all transactions not yet processed by getSolverCompetition script */
+SELECT * FROM transactions where tx_hash not in(SELECT auction.transactionHash from auction);
+
+
+DELETE from transactions WHERE tx_hash in (SELECT tx_hash FROM transactions where tx_hash not in(SELECT auction.transactionHash from auction));
+
+/* CallData query */
+SELECT * from call_data where call_data.solutionId not in (SELECT call_data_clearing_prices.solution_id from call_data_clearing_prices);
+
+SELECT count(DISTINCT solutionId) from call_data; /* 47248 */
+SELECT count(id) from solutions; /* 381125 */
+
+
+SELECT DISTINCT uninternalized_call_data from uninternalized_call_data_interactions
+WHERE uninternalized_call_data like '23b872dd%' group by solution_id ;
+
+/* Get call_data from solutions which contain a Transfer method , meaning that's a CoW, cuz anything else would be a DEX interaction or a internal liquidity */
+SELECT DISTINCT call_data from call_data_interactions
+WHERE call_data like 'a9059cbb%' group by solution_id;
+
+/* Get CoWs from solutions:
+- Call data has a Transfer call
+- Token amount in and out are the same
+- The transfer is not using settlement contract liquidity (uninternalized call data)
+*/
+
+
+SELECT ucdt.*
+from uninternalized_call_data_interactions as ucdt
+JOIN uninternalized_call_data_trades as ucdtr on ucdtr.solution_id = ucdt.solution_id
+JOIN solutions as s on s.id = ucdt.solution_id
+JOIN solution_orders as so on so.solutionId = s.id
+JOIN orders_by_uid as ouid on ouid.uid = so.orderId
+JOIN auction as au on s.auctionId = au.auctionId
+JOIN contract_names as cn on cn.address = ucdt.target
+JOIN call_data as cd on cd.solutionId = ucdt.solution_id
+WHERE ucdt.uninternalized_call_data like 'a9059cbb%' 
+AND ucdt.interactionPos = 1 
+AND ucdt.solution_id in (SELECT solutionId FROM solution_orders group by solutionId having count(solutionId) >=2)
+ORDER BY s.auctionId ASC;
+
+
+
+SELECT s.auctionId, ucdt.solution_id, cd.callData, ucdt.target as ERC20_transferrred, cn.contract_name as ERC20_name, uninternalized_call_data as Transfer_call_data,
+s.solver as Solver_name, s.ranking as Solution_ranking,
+so.executedAmount as Transferred_amount,
+ouid.creation_date as Order_creation_date, ouid.owner as Order_owner, au.transactionHash, ouid.sell_token, ouid.buy_token, ouid.sell_amount, ouid.buy_amount
+from uninternalized_call_data_interactions as ucdt
+JOIN solutions as s on s.id = ucdt.solution_id
+JOIN solution_orders as so on so.solutionId = s.id
+JOIN orders_by_uid as ouid on ouid.uid = so.orderId
+JOIN auction as au on s.auctionId = au.auctionId
+JOIN contract_names as cn on cn.address = ucdt.target
+JOIN call_data as cd on cd.solutionId = ucdt.solution_id
+WHERE ucdt.uninternalized_call_data like 'a9059cbb%' 
+AND ucdt.interactionPos = 1 
+AND ucdt.solution_id in (SELECT solutionId FROM solution_orders group by solutionId having count(solutionId) >=2)
+ORDER BY s.auctionId ASC;
+
+
+
+SELECT s.auctionId, ucdt.solution_id, ucdt.target as ERC20_transferrred, uninternalized_call_data as Transfer_call_data,
+s.solver as Solver_name, s.ranking as Solution_ranking,
+so.executedAmount as Transferred_amount,
+ouid.*
+from uninternalized_call_data_interactions as ucdt
+JOIN solutions as s on s.id = ucdt.solution_id
+JOIN solution_orders as so on so.solutionId = s.id
+JOIN orders_by_uid as ouid on ouid.uid = so.orderId
+WHERE ucdt.uninternalized_call_data like 'a9059cbb%' 
+AND ucdt.interactionPos = 1 
+AND ucdt.solution_id in (SELECT solutionId FROM solution_orders group by solutionId having count(solutionId) >=2)
+ORDER BY s.auctionId ASC;
+
+
+
+/* Get CoWs from solutions:
+- Call data has a Transfer call and at least 2 orders in solution cuz less than 2 orders there is no CoW
+*/
+
+SELECT count(solutionId) as counter, solutionId FROM solution_orders 
+group by solutionId
+having counter >=2;
+
+
+
+SELECT ucdt.*, au.transactionHash, ouid.* FROM uninternalized_call_data_interactions as ucdt
+RIGHT JOIN solutions as s on s.id = ucdt.solution_id
+LEFT JOIN auction as au on au.auctionId = s.auctionId
+LEFT JOIN solution_orders as so on so.solutionId = s.id
+LEFT JOIN orders_by_uid as ouid on ouid.uid = so.orderId
+where ucdt.solution_id = 8900;
+
+
+
+/* Get CoWs from solutions:
+- Call data has a Transfer call
+- Token amount in and out are the same?
+- The transfer is not using settlement contract liquidity (uninternalized call data)
+- solution contains at least 2 orders, in order for it to have a potential CoW
+- solution contains at least 2 transfers
+*/
+
+
+/*
+- solution contains at least 2 transfers
+*/
+
+SELECT count(solution_id) as counter, ucdt.*, au.transactionHash, ouid.*, concat('0x',substring(ucdt.uninternalized_call_data, 33, 40)) as dst FROM uninternalized_call_data_interactions as ucdt
+JOIN solutions as s on s.id = ucdt.solution_id
+JOIN auction as au on au.auctionId = s.auctionId
+JOIN solution_orders as so on so.solutionId = s.id
+JOIN orders_by_uid as ouid on ouid.uid = so.orderId
+WHERE ucdt.uninternalized_call_data like 'a9059cbb%' 
+/* AND ucdt.uninternalized_call_data like '%'+substring(ouid.owner, 3,42) +'%' */
+/* AND ucdt.uninternalized_call_data like '%9008d19f58aabd9ed0d60971565aa8510560ab41%' */
+AND ucdt.interactionPos = 1
+Group By ucdt.solution_id
+Having count(ucdt.solution_id) >= 2; 
+
+
+
+/* get tokens from orders in a specific solution */
+SELECT au.auctionId, so.solutionId, s.ranking, ouid.kind, ouid.sell_token, ouid.buy_token, ouid.sell_amount, ouid.sell_token_balance, ouid.buy_amount, ouid.buy_token_balance, ouid.executed_buy_amount, ouid.sell_amount/ouid.buy_amount as Limite_Price, ouid.sell_amount/ouid.executed_buy_amount as Executed_price, ouid.creation_date, ouid.uid
+FROM orders_by_uid as ouid
+JOIN solution_orders as so on so.orderId = ouid.uid
+JOIN solutions as s on s.id = so.solutionId
+JOIN auction as au on au.auctionId = s.auctionId
+WHERE so.solutionId in (SELECT so.solutionId FROM solution_orders as so group by so.solutionId having count(so.solutionId) >=2 order by count(so.solutionId) DESC)
+and s.ranking = 1
+ORDER BY au.auctionId ASC, so.solutionId ASC, s.ranking DESC;
+
+
+/* list of solutionIds that contain more than 2 orders */
+SELECT count(so.solutionId) as orders_in_solution, so.solutionId
+FROM solution_orders as so
+group by so.solutionId
+having count(so.solutionId) >=2 order by count(so.solutionId) DESC;
