@@ -1,4 +1,4 @@
-import getSettlementHashes, getSolverCompetitions, getCallData, getUninternalizedCallData, getContractNames, getOrdersByUid
+import getSettlementHashes, getSolverCompetitions, getCallData, getUninternalizedCallData, getContractNames, getOrdersByUid, tagContracts
 from dotenv import load_dotenv
 from loguru import logger
 import os, sys
@@ -26,6 +26,8 @@ def main():
         getContractNames.main()
         logger.info("Start getOrdersByUid")
         getOrdersByUid.main()
+        logger.info("Start tagContracts")
+        tagContracts.main()
 
 
 if __name__ == "__main__":

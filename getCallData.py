@@ -125,6 +125,8 @@ def main():
                     session.add(interaction)
             
         session.commit()
+    # Close the session
+    session.close()
 
 
 if __name__ == "__main__":

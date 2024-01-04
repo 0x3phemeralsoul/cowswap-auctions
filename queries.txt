@@ -101,6 +101,8 @@ SELECT * from call_data where call_data.solutionId not in (SELECT uninternalized
 /* Get contract names missing */
 SELECT target from uninternalized_call_data_interactions where target not in (SELECT contract_names.address from contract_names) AND target <> 'NULL';
 
+/* Get empty tags on contratName */
+SELECT * from contract_names where tag = '';
 
 SELECT count(DISTINCT solutionId) from call_data; /* 47248 */
 SELECT count(id) from solutions; /* 381125 */

@@ -108,5 +108,8 @@ def main():
             logger.info(f"UninternalizedCallData:API request failed for target address {target_address}. Error: {data['message']}, {data['result']}")
     session.commit()
 
+    # Close the session
+    session.close()
+
 if __name__ == "__main__":
     main()
