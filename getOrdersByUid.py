@@ -1,5 +1,5 @@
 import requests
-import os, sys
+import os, sys, time
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, text
@@ -11,24 +11,43 @@ from dotenv import load_dotenv
 
    
 def fetch_order_api_data(order_hash):
-    api_url = f"https://api.cow.fi/"+os.getenv('CHAIN')+"/api/v1/orders/{order_hash}"
-    response = requests.get(api_url)
+    # Checking the production env
+    while True:
+        try:
+            api_url = f"https://api.cow.fi/{os.getenv('CHAIN')}/api/v1/orders/{order_hash}"
+            logger.debug(api_url)
+            response = requests.get(api_url)
 
-    if response.status_code == 200:
-        # Parse the JSON response
-        api_data = response.json()
-        return api_data
-    else:
-        print(f"Error fetching API data for tx_hash {order_hash}. Status Code: {response.status_code}")
-        return None
+            if response.status_code == 200:
+                # Parse the JSON response
+                api_data = response.json()
+                return api_data
+            else:
+                logger.info(f"PRODUCTION: Error fetching API data for tx_hash {order_hash}. Status Code: {response.status_code}")
+                
+                # checking the Barn env
+                api_url = f"https://barn.api.cow.fi/{os.getenv('CHAIN')}/api/v1/orders/{order_hash}"
+                response = requests.get(api_url)
+
+                if response.status_code == 200:
+                    # Parse the JSON response
+                    api_data = response.json()
+                    return api_data
+                else:
+                    logger.info(f"BARN: Error fetching API data for tx_hash {order_hash}. Status Code: {response.status_code}")
+                    return None
+        except Exception as error:
+            logger.debug(f"ERROR: {error}")
+            time.sleep(5)
+            continue
 
 def main():
     # Load environment variables from .env file
     load_dotenv()
 
     # Setting logging
-    logger.remove(0) 
-    logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
+    #logger.remove(0) 
+    #logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
     logger.add("logs/getOrdersByUid_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
 
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL

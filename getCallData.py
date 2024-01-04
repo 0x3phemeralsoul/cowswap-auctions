@@ -11,8 +11,8 @@ def main():
     load_dotenv()
 
     # Setting logging
-    logger.remove(0)
-    logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
+    #logger.remove(0)
+    #logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
     logger.add("logs/getCallData_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
 
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
