@@ -2,7 +2,7 @@ import requests
 import os, sys
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 from loguru import logger
 
@@ -28,8 +28,13 @@ def main():
     session = Session(engine)
 
 
-    # Example: Query all transactions from the table
-    contracts = session.query(CallDataInteraction.target).distinct().all()
+    # Query missing inserts
+    logger.info("Running query to remove entries already processed. Takes several seconds")
+    contracts_query = text("SELECT target from call_data_interactions where target not in (SELECT contract_names.address from contract_names) AND target <> 'NULL'")
+
+    contracts = session.execute(contracts_query).all()
+    logger.info(f"Entries to process {len(contracts)}")
+    session.commit()
 
     # Iterate through distinct targets and make API requests
     for target in contracts:
@@ -39,7 +44,7 @@ def main():
         # A better endpoint is the metadata API which contains the public name tags that Etherscan has created but it costs 800+ USD/month. 
         # An alternative is to fetch this through Dune API which has the public name tags I think.
         api_url = f"https://{os.getenv('EXPLORER_URL')}/api?module=contract&action=getsourcecode&address={target_address}&apikey={os.getenv('EXPLORER_API')}"
-        print(api_url)
+        logger.debug(api_url)
         # Make the API request
         response = requests.get(api_url)
         data = response.json()
@@ -61,9 +66,17 @@ def main():
                 logger.info(f"CallData:Contract {target_address} already exists -----------------skipping")
         else:
             logger.info(f"CallData:API request failed for target address {target_address}. Error: {data['message']}, {data['result']}")
-
+    session.commit()
     # Example: Query all transactions from the table
     contracts = session.query(UninternalizedCallDataInteraction.target).distinct().all()
+    
+    # Query missing inserts
+    logger.info("Running query to remove entries already processed. Takes several seconds")
+    contracts_query = text("SELECT target from uninternalized_call_data_interactions where target not in (SELECT contract_names.address from contract_names) AND target <> 'NULL'")
+
+    contracts = session.execute(contracts_query).all()
+    logger.info(f"Entries to process {len(contracts)}")
+    session.commit()
 
     # Iterate through distinct targets and make API requests
     for target in contracts:
@@ -71,7 +84,7 @@ def main():
 
         # Construct the API URL
         api_url = f"https://"+os.getenv('EXPLORER_URL')+"/api?module=contract&action=getsourcecode&address={target_address}&apikey={EXPLORER_API_key}"
-
+        logger.debug(api_url)
         # Make the API request
         response = requests.get(api_url)
         data = response.json()
@@ -93,7 +106,7 @@ def main():
                 logger.info(f"UninternalizedCallData:Contract {target_address} already exists -----------------skipping")
         else:
             logger.info(f"UninternalizedCallData:API request failed for target address {target_address}. Error: {data['message']}, {data['result']}")
-
+    session.commit()
 
 if __name__ == "__main__":
     main()
