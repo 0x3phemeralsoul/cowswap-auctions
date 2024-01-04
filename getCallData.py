@@ -75,7 +75,7 @@ def main():
             if(not exists):
                 token = CallDataToken(address=address)
                 session.add(token)
-        # session.commit()
+
         # store clearing prices
         for price in func_params['clearingPrices']:
             logger.debug(f"Starting clearing prices inserts. Price:{price}")

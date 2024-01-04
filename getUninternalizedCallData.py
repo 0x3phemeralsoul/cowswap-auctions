@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os, json, sys
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from loguru import logger
 
 def main():
@@ -50,7 +50,13 @@ def main():
 
     settlementContract = web3.eth.contract(address=os.getenv("contract_address"), abi=abi)
 
+    # Query missing inserts
+    logger.info("Running query to remove entries already processed. Takes several seconds")
+    calldata_query = text("SELECT * from call_data where call_data.solutionId not in (SELECT uninternalized_call_data_clearing_prices.solution_id from uninternalized_call_data_clearing_prices)")
 
+    CallDatas = session.execute(calldata_query).all()
+    logger.info(f"Entries to process {len(CallDatas)}")
+    session.commit()
 
 
 
@@ -63,64 +69,60 @@ def main():
         logger.info(f"Solution ID: {solutionId}")
         # Decode input data using Contract object's decode_function_input() method
         func_obj, func_params = settlementContract.decode_function_input(toDecode)
-        #if solutionID already exists in call_data_tables, then skip
-        #TODO: add query and refactor to remove IDs in table
-        exists = session.query(UninternalizedCallDataClearingPrice.solution_id).filter_by(solution_id=solutionId).first() is not None
-        logger.info(f"SolutionID {solutionId} already exists -----------------skipping")
-        if(not exists):
-            # store tokens
-            for address in func_params['tokens']:
-                exists = session.query(UninternalizedCallDataToken.address).filter_by(address=address).first() is not None
-                if(not exists):
-                    token = UninternalizedCallDataToken(address=address)
-                    session.add(token)
-            # session.commit()
-            # store clearing prices
-            for price in func_params['clearingPrices']:
-                clearing_price = UninternalizedCallDataClearingPrice(price=str(price), solution_id=solutionId)
-                session.add(clearing_price)
 
-            # store trades
-            for trade_data in range(len(func_params['trades'])):
-                logger.info(f"starting trades {trade_data}-----------------------------------------------------")
-                logger.info(f"buyAmount type: {type(str(func_params['trades'][trade_data]['buyTokenIndex']))}")
-                trades= UninternalizedCallDataTrade(
-                sell_token_index= func_params['trades'][trade_data]['sellTokenIndex'],
-                buy_token_index= str(func_params['trades'][trade_data]['buyTokenIndex']),
-                receiver= func_params['trades'][trade_data]['receiver'],
-                sell_amount= str(func_params['trades'][trade_data]['sellAmount']),
-                buy_amount= str(func_params['trades'][trade_data]['buyAmount']),
-                valid_to= func_params['trades'][trade_data]['validTo'],
-                app_data= str(func_params['trades'][trade_data]['appData'].hex()),
-                fee_amount= str(func_params['trades'][trade_data]['feeAmount']),
-                flags= func_params['trades'][trade_data]['flags'],
-                executed_amount= str(func_params['trades'][trade_data]['executedAmount']),
-                signature=str(func_params['trades'][trade_data]['signature'].hex()),
-                solution_id=solutionId)
-                session.add(trades)
+        # store tokens
+        for address in func_params['tokens']:
+            exists = session.query(UninternalizedCallDataToken.address).filter_by(address=address).first() is not None
+            if(not exists):
+                token = UninternalizedCallDataToken(address=address)
+                session.add(token)
 
-            for interaction_data in range(len(func_params['interactions'])):
-                logger.info(f"interaction lentgh {interaction_data}: {len(func_params['interactions'][interaction_data])}")
-                if(len(func_params['interactions'][interaction_data]) == 0):
+        # store clearing prices
+        for price in func_params['clearingPrices']:
+            clearing_price = UninternalizedCallDataClearingPrice(price=str(price), solution_id=solutionId)
+            session.add(clearing_price)
+
+        # store trades
+        for trade_data in range(len(func_params['trades'])):
+            logger.info(f"starting trades {trade_data}-----------------------------------------------------")
+            logger.info(f"buyAmount type: {type(str(func_params['trades'][trade_data]['buyTokenIndex']))}")
+            trades= UninternalizedCallDataTrade(
+            sell_token_index= func_params['trades'][trade_data]['sellTokenIndex'],
+            buy_token_index= str(func_params['trades'][trade_data]['buyTokenIndex']),
+            receiver= func_params['trades'][trade_data]['receiver'],
+            sell_amount= str(func_params['trades'][trade_data]['sellAmount']),
+            buy_amount= str(func_params['trades'][trade_data]['buyAmount']),
+            valid_to= func_params['trades'][trade_data]['validTo'],
+            app_data= str(func_params['trades'][trade_data]['appData'].hex()),
+            fee_amount= str(func_params['trades'][trade_data]['feeAmount']),
+            flags= func_params['trades'][trade_data]['flags'],
+            executed_amount= str(func_params['trades'][trade_data]['executedAmount']),
+            signature=str(func_params['trades'][trade_data]['signature'].hex()),
+            solution_id=solutionId)
+            session.add(trades)
+
+        for interaction_data in range(len(func_params['interactions'])):
+            logger.info(f"interaction lentgh {interaction_data}: {len(func_params['interactions'][interaction_data])}")
+            if(len(func_params['interactions'][interaction_data]) == 0):
+                interaction = UninternalizedCallDataInteraction(
+                    target='NULL',
+                    value=0,
+                    uninternalized_call_data='NULL',
+                    solution_id=solutionId,
+                    interactionPos=interaction_data
+                )
+                session.add(interaction)
+            else:
+                for interaction_set in range(len(func_params['interactions'][interaction_data])):
+
                     interaction = UninternalizedCallDataInteraction(
-                        target='NULL',
-                        value=0,
-                        uninternalized_call_data='NULL',
+                        target=func_params['interactions'][interaction_data][interaction_set]['target'],
+                        value=str(func_params['interactions'][interaction_data][interaction_set]['value']),
+                        uninternalized_call_data=func_params['interactions'][interaction_data][interaction_set]['callData'].hex(),
                         solution_id=solutionId,
                         interactionPos=interaction_data
                     )
                     session.add(interaction)
-                else:
-                    for interaction_set in range(len(func_params['interactions'][interaction_data])):
-
-                        interaction = UninternalizedCallDataInteraction(
-                            target=func_params['interactions'][interaction_data][interaction_set]['target'],
-                            value=str(func_params['interactions'][interaction_data][interaction_set]['value']),
-                            uninternalized_call_data=func_params['interactions'][interaction_data][interaction_set]['callData'].hex(),
-                            solution_id=solutionId,
-                            interactionPos=interaction_data
-                        )
-                        session.add(interaction)
             
         session.commit()
 

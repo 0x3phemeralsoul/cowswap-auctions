@@ -63,7 +63,7 @@ def main():
     session = Session(engine)
 
 
-    # Example: Query all transactions from the table
+    # Query missing inserts
     logger.info("Running query to remove entries already processed. Takes several seconds")
     query = text("SELECT * FROM transactions where tx_hash not in(SELECT auction.transactionHash from auction)")
     transactions = session.execute(query).all()
