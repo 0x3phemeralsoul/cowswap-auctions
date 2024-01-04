@@ -52,7 +52,8 @@ def main():
         for block in range(int(START_BLOCK+1), int(END_BLOCK)): 
             block = web3.eth.get_block(block, full_transactions=True) 
             for transaction in block.transactions:
-                if(transaction["to"] == contract_address):
+                if(transaction["to"] == contract_address and transaction["input"].hex().startswith('0x13d79a0b')):
+                    logger.debug(transaction["input"].hex())
                     logger.info(f"Tx Hash:{transaction['hash'].hex()} - Block:{block['number']}")
                     exists = session.query(Transaction.tx_hash).filter_by(tx_hash=transaction["hash"].hex()).first() is not None
                     if(not exists):
