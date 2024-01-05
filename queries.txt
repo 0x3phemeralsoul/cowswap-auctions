@@ -91,11 +91,18 @@ SELECT block_number from transactions ORDER by block_number DESC Limit 1;
 /* GET all transactions not yet processed by getSolverCompetition script */
 SELECT * FROM transactions where tx_hash not in(SELECT auction.transactionHash from auction);
 
-
+/* DELETE transacitons that are not settle() */
 DELETE from transactions WHERE tx_hash in (SELECT tx_hash FROM transactions where tx_hash not in(SELECT auction.transactionHash from auction));
 
 /* CallData query */
 SELECT * from call_data where call_data.solutionId not in (SELECT call_data_clearing_prices.solution_id from call_data_clearing_prices);
+SELECT * from call_data where call_data.solutionId not in (SELECT uninternalized_call_data_clearing_prices.solution_id from uninternalized_call_data_clearing_prices);
+
+/* Get contract names missing */
+SELECT target from uninternalized_call_data_interactions where target not in (SELECT contract_names.address from contract_names) AND target <> 'NULL';
+
+/* Get empty tags on contratName */
+SELECT * from contract_names where tag = '';
 
 SELECT count(DISTINCT solutionId) from call_data; /* 47248 */
 SELECT count(id) from solutions; /* 381125 */

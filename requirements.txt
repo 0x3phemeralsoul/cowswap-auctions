@@ -1,4 +1,6 @@
+loguru==0.7.2
 python-dotenv==1.0.0
+python_dateutil==2.8.2
 Requests==2.31.0
 SQLAlchemy==2.0.23
 web3==6.11.3
