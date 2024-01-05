@@ -12,7 +12,6 @@ RUN pip install -r requirements.txt
 
 # Create a volume for the database (DB) and logs
 VOLUME /app
-VOLUME /app/logs
 
 
 # Define the command to run your application
