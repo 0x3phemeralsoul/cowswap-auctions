@@ -49,8 +49,17 @@ python3 getOrdersByUid.py
 
 
 # note
-if you set the CHUNK_SIZE too little, like 10 blocks and there are no settlement transactions during those blocks, no new block is added to the Transactions table, and the getSettlementHashes always checks the highest block in Transactions, so if no new block is added, the next time the loop iterates it will pick again the same block + 10 blocks(and we know those 10 blocks didn't bring any new blocks, hence infinite loop on those 10 blocks). Pick CHUNK_SIZE like 50 blocks or so.
+if you set the CHUNK_SIZE too little, like 10 blocks and there are no settlement transactions during those blocks, no new block is added to the Transactions table, and the getSettlementHashes always checks the highest block in Transactions, so if no new block is added, the next time the loop iterates it will pick again the same block + 10 blocks(and we know those 10 blocks didn't bring any new blocks, hence infinite loop on those 10 blocks). Pick CHUNK_SIZE like 500 blocks or so.
 
+
+##Docker
+
+`
+docker build -t cowswap-auctions .
+`
+`
+docker run -v ~/cowswap-auctions:/app/ cowswap-auctions
+`
 # to kill cointainer
 docker inspect --format '{{.State.Pid}}' containername
 
