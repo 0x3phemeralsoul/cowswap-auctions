@@ -1,5 +1,6 @@
 *.env
 *.db
+!new_db.db
 env
 backup
 *.db-journal
