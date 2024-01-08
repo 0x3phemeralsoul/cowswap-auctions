@@ -14,7 +14,7 @@ def main():
     # Setting logging
     #logger.remove(0)
     #logger.add(sys.stdout, level=os.getenv("LOGGER_LEVEL"))
-    logger.add("logs/getSettlementHashes_{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
+    logger.add("logs/getSettlementHashes{time:YYYY-MM-DD}.log", level=os.getenv("LOGGER_LEVEL"), rotation="100 MB")
     # Replace 'YOUR_DATABASE_URL' with the actual SQLite database URL
     database_url = os.getenv("DATABASE_URL", "sqlite:///cowswap-auctions.db")
     engine = create_engine(database_url, echo=os.getenv('VERBOSE_DB') == 'True')
@@ -44,8 +44,11 @@ def main():
     # Specify blocks to fetch
 
     highestBlockDB_query = text("SELECT block_number from transactions ORDER by block_number DESC Limit 1")
-
-    START_BLOCK=session.execute(highestBlockDB_query).scalar_one()
+    logger.info(f"Highest block in DB: {session.execute(highestBlockDB_query).scalar_one_or_none()}")
+    if (session.execute(highestBlockDB_query).scalar_one_or_none() == None):
+        START_BLOCK=int(os.getenv("START_BLOCK"))
+    else:
+        START_BLOCK=session.execute(highestBlockDB_query).scalar_one_or_none()
     END_BLOCK=min(int(START_BLOCK+int(os.getenv("CHUNK_SIZE"))),web3.eth.get_block('latest')['number'])
     logger.info(f"Start BLOCK:{START_BLOCK}, End BLOCK:{END_BLOCK}")
     try:
