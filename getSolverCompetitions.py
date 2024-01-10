@@ -112,6 +112,7 @@ def main():
                     solverAddress=api_data['solutions'][solutions]['solverAddress'],
                     scoreProtocolWithSolverRisk=scoreProtocolWithSolverRisk,
                     ranking=api_data['solutions'][solutions]['ranking'],
+                    #removed from production for some reason.
                     # objective_total=api_data['solutions'][solutions]['objective']['total'],
                     # objective_surplus=api_data['solutions'][solutions]['objective']['surplus'],
                     # objective_fees=api_data['solutions'][solutions]['objective']['fees'],
@@ -127,7 +128,11 @@ def main():
                     session.add(clearing_price)
                 # session.commit()
                 for solution_orders in range(len(api_data['solutions'][solutions]['orders'])):
-                    solution_order = SolutionOrder(orderId=api_data['solutions'][solutions]['orders'][solution_orders]['id'], executedAmount=api_data['solutions'][solutions]['orders'][solution_orders]['executedAmount'], solutions=solution)
+                    # BARN doesn't have executedAmoun in the API.
+                    if ('executedAmount' in api_data['solutions'][solutions]['orders'][solution_orders]):
+                        solution_order = SolutionOrder(orderId=api_data['solutions'][solutions]['orders'][solution_orders]['id'], executedAmount=api_data['solutions'][solutions]['orders'][solution_orders]['executedAmount'], solutions=solution)
+                    else:
+                        solution_order = SolutionOrder(orderId=api_data['solutions'][solutions]['orders'][solution_orders]['id'], executedAmount='NULL', solutions=solution)
                     session.add(solution_order)
                 # session.commit()
 
