@@ -233,3 +233,7 @@ SELECT count(so.solutionId) as orders_in_solution, so.solutionId
 FROM solution_orders as so
 group by so.solutionId
 having count(so.solutionId) >=2 order by count(so.solutionId) DESC;
+
+
+
+SELECT * FROM solution_orders where solution_orders.orderId = '0x8b7c8b9df00e67e43bcfcd5b2b393209332407dea792827e37d46b967b8520e3';
